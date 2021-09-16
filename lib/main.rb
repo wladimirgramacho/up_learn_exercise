@@ -17,5 +17,5 @@ def fetch(url)
 end
 
 def valid_url?(url)
-  url&.start_with?('http') && url =~ URI::regexp
+  url =~ URI::regexp(['http', 'https'])
 end
