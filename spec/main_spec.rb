@@ -9,57 +9,11 @@ RSpec.describe 'fetch method' do
   # Assuming open-uri is properly tested
   before { allow(URI).to receive(:open).with(url).and_return(html) }
 
-  describe 'returns links on page' do
-    let(:url) { 'https://google.com' }
-    let(:html) { "<a href='https://google.com'>Google</a><a href='https://bing.com'>Bing</a>" }
-
-    it 'returns all links' do
-      is_expected.to have_attributes(
-        success: true,
-        links: ['https://google.com', 'https://bing.com']
-      )
-    end
-
-    context 'when page has invalid links' do
-      let(:html) { "<a href='#'>Google</a><a href='https://bing.com'>Bing</a>" }
-
-      it 'returns only valid links' do
-        is_expected.to have_attributes(success: true, links: ['https://bing.com'])
-      end
-    end
-  end
-
-  describe 'returns assets on page' do
-    let(:url) { 'https://google.com' }
-    let(:html) do 
-      "<img src='https://google.com'>Google</img>"\
-      "<img src='https://bing.com'>Bing</img>"
-    end
-
-    it 'returns all links' do
-      is_expected.to have_attributes(
-        success: true,
-        assets: ['https://google.com', 'https://bing.com']
-      )
-    end
-
-    context 'when page has invalid links' do
-      let(:html) do
-        "<img src='data:image/svg+xml;base64,PHN2ZyiLz4='>Google</img>"\
-        "<img src='https://bing.com'>Bing</img>"
-      end
-
-      it 'returns only valid links' do
-        is_expected.to have_attributes(success: true, assets: ['https://bing.com'])
-      end
-    end
-  end
-
-  describe 'returns links and assets on page' do
+  context 'when url is valid' do
     let(:url) { 'https://google.com' }
     let(:html) do
-      "<img src='https://google.com'>Google</img><img src='https://bing.com'>Bing</img>"\
-      "<a href='https://google.com'>Google</a><a href='https://bing.com'>Bing</a>"
+      "<a href='https://google.com'>Google</a><a href='https://bing.com'>Bing</a>"\
+      "<img src='https://google.com'>Google</img><img src='https://bing.com'>Bing</img>"
     end
 
     it 'returns all valid links and assets' do
@@ -69,9 +23,24 @@ RSpec.describe 'fetch method' do
         assets: ['https://google.com', 'https://bing.com']
       )
     end
+
+    describe 'ignores invalid links' do
+      let(:html) do
+        "<a href='#'>Google</a><a href='https://bing.com'>Bing</a>"\
+        "<img src='data:image/svg+xml;base64,PHN2ZyiLz4='>Google</img><img src='https://bing.com'>Bing</img>"
+      end
+
+      it 'returns only valid links' do
+        is_expected.to have_attributes(
+          success: true,
+          links: ['https://bing.com'],
+          assets: ['https://bing.com']
+        )
+      end
+    end
   end
 
-  describe 'when url is invalid' do
+  context 'when url is invalid' do
     context 'when url is nil' do
       let(:url) { nil }
       
@@ -80,16 +49,16 @@ RSpec.describe 'fetch method' do
       end
     end
 
-    context 'when url is invalid' do
-      let(:url) { 'foobar' }
-      
+    context 'when url does not follow url patterns' do
+      let(:url) { 'foobar.com' }
+
       it 'returns failure and error message' do
         is_expected.to have_attributes(success: false, error: 'Invalid URL')
       end
     end
   end
 
-  describe 'when an unknown error happened' do
+  context 'when an unknown error happened' do
     let(:url) { 'https://google.com' }
 
     before { allow(URI).to receive(:open).with(url).and_raise(StandardError, 'What happened') }
