@@ -88,4 +88,17 @@ RSpec.describe 'fetch method' do
       end
     end
   end
+
+  describe 'when an unknown error happened' do
+    let(:url) { 'https://google.com' }
+
+    before { allow(URI).to receive(:open).with(url).and_raise(StandardError, 'What happened') }
+
+    it 'returns failure and error message' do
+      is_expected.to have_attributes(
+        success: false,
+        error: "Couldn't fetch the url. Error: #<StandardError: What happened>"
+      )
+    end
+  end
 end
