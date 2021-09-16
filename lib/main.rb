@@ -2,23 +2,22 @@ require 'open-uri'
 require 'nokogiri'
 require 'ostruct'
 
-
 def fetch(url)
   return OpenStruct.new(success: false, error: 'Invalid URL') unless valid_url?(url)
 
-  result = OpenStruct.new
+  html_doc = Nokogiri::HTML(URI.open(url))
 
-  html = Nokogiri::HTML(URI.open(url))
-
-  result.success = true
-  result.links = html.css('a').map { |anchor_tag| anchor_tag['href'] }.filter(&method(:valid_url?))
-  result.assets = html.css('img').map { |image_tag| image_tag['src'] }.filter(&method(:valid_url?))
-
-  result
+  OpenStruct.new(
+    success: true,
+    links: extract_links_from_tag(html_doc, 'a', 'href'),
+    assets: extract_links_from_tag(html_doc, 'img', 'src')
+  )
 rescue StandardError => error
-  result.success = false
-  result.error = "Couldn't fetch the url. Error: #{error.inspect}"
-  result
+  OpenStruct.new(success: false, error: "Couldn't fetch the url. Error: #{error.inspect}")
+end
+
+def extract_links_from_tag(html_doc, html_tag, attribute)
+  html_doc.css(html_tag).map { |tag| tag[attribute] }.filter(&method(:valid_url?))
 end
 
 def valid_url?(url)
