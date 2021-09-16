@@ -11,8 +11,8 @@ def fetch(url)
   html = Nokogiri::HTML(URI.open(url))
 
   result.success = true
-  result.links = html.css('a').map { |anchor_tag| anchor_tag['href'] }.filter { |link| valid_url?(link) }
-  result.assets = html.css('img').map { |image_tag| image_tag['src'] }.filter { |link| valid_url?(link) }
+  result.links = html.css('a').map { |anchor_tag| anchor_tag['href'] }.filter(&method(:valid_url?))
+  result.assets = html.css('img').map { |image_tag| image_tag['src'] }.filter(&method(:valid_url?))
 
   result
 rescue StandardError => error
