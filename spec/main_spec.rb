@@ -24,17 +24,17 @@ RSpec.describe 'fetch method' do
       let(:html) { "<a href='#'>Google</a><a href='https://bing.com'>Bing</a>" }
 
       it 'returns only valid links' do
-        is_expected.to have_attributes(
-          success: true,
-          links: ['https://bing.com']
-        )
+        is_expected.to have_attributes(success: true, links: ['https://bing.com'])
       end
     end
   end
 
   describe 'returns assets on page' do
     let(:url) { 'https://google.com' }
-    let(:html) { "<img src='https://google.com'>Google</img><img src='https://bing.com'>Bing</img>" }
+    let(:html) do 
+      "<img src='https://google.com'>Google</img>"\
+      "<img src='https://bing.com'>Bing</img>"
+    end
 
     it 'returns all links' do
       is_expected.to have_attributes(
@@ -50,10 +50,7 @@ RSpec.describe 'fetch method' do
       end
 
       it 'returns only valid links' do
-        is_expected.to have_attributes(
-          success: true,
-          assets: ['https://bing.com']
-        )
+        is_expected.to have_attributes(success: true, assets: ['https://bing.com'])
       end
     end
   end
