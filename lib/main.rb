@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open-uri'
 require 'nokogiri'
 require 'ostruct'
@@ -5,7 +7,7 @@ require 'ostruct'
 def fetch(url)
   return OpenStruct.new(success: false, error: 'Invalid URL') unless valid_url?(url)
 
-  html_doc = Nokogiri::HTML(URI.open(url))
+  html_doc = Nokogiri::HTML(URI.parse(url).open)
 
   OpenStruct.new(
     success: true,
@@ -21,5 +23,5 @@ def extract_links_from_tag(html_doc, html_tag, attribute)
 end
 
 def valid_url?(url)
-  url =~ URI::regexp(['http', 'https'])
+  url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])
 end

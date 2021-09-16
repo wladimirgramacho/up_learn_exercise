@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../lib/main'
 
 RSpec.describe 'fetch method' do
@@ -6,8 +8,13 @@ RSpec.describe 'fetch method' do
 
   subject { fetch(url) }
 
+  let(:uri_mock) { double }
+
   # Assuming open-uri is properly tested
-  before { allow(URI).to receive(:open).with(url).and_return(html) }
+  before do
+    allow(URI).to receive(:parse).with(url).and_return(uri_mock)
+    allow(uri_mock).to receive(:open).and_return(html)
+  end
 
   context 'when url is valid' do
     let(:url) { 'https://google.com' }
@@ -43,7 +50,7 @@ RSpec.describe 'fetch method' do
   context 'when url is invalid' do
     context 'when url is nil' do
       let(:url) { nil }
-      
+
       it 'returns failure and error message' do
         is_expected.to have_attributes(success: false, error: 'Invalid URL')
       end
@@ -61,7 +68,7 @@ RSpec.describe 'fetch method' do
   context 'when an unknown error happened' do
     let(:url) { 'https://google.com' }
 
-    before { allow(URI).to receive(:open).with(url).and_raise(StandardError, 'What happened') }
+    before { allow(URI).to receive(:parse).and_raise(StandardError, 'What happened') }
 
     it 'returns failure and error message' do
       is_expected.to have_attributes(
