@@ -11,15 +11,25 @@ RSpec.describe 'fetch method' do
 
   describe 'returns links on page' do
     let(:url) { 'https://google.com' }
-    let(:html) { "<a href='https://google.com'>Google</a>" }
+    let(:html) { "<a href='https://google.com'>Google</a><a href='https://bing.com'>Bing</a>" }
 
-    it { is_expected.to have_attributes(success: true, links: ['https://google.com']) }
+    it 'returns all links' do
+      is_expected.to have_attributes(
+        success: true,
+        links: ['https://google.com', 'https://bing.com']
+      )
+    end
   end
 
   describe 'returns assets on page' do
     let(:url) { 'https://google.com' }
-    let(:html) { "<img src='https://google.com'>Google</img>" }
+    let(:html) { "<img src='https://google.com'>Google</img><img src='https://bing.com'>Bing</img>" }
 
-    it { is_expected.to have_attributes(success: true, assets: ['https://google.com']) }
+    it 'returns all links' do
+      is_expected.to have_attributes(
+        success: true,
+        assets: ['https://google.com', 'https://bing.com']
+      )
+    end
   end
 end
