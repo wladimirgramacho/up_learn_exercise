@@ -56,5 +56,21 @@ RSpec.describe 'fetch method' do
         )
       end
     end
+
+    describe 'returns links and assets on page' do
+      let(:url) { 'https://google.com' }
+      let(:html) do
+        "<img src='https://google.com'>Google</img><img src='https://bing.com'>Bing</img>"\
+        "<a href='https://google.com'>Google</a><a href='https://bing.com'>Bing</a>"
+      end
+  
+      it 'returns all valid links and assets' do
+        is_expected.to have_attributes(
+          success: true,
+          links: ['https://google.com', 'https://bing.com'],
+          assets: ['https://google.com', 'https://bing.com']
+        )
+      end
+    end
   end
 end
