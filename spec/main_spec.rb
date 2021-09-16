@@ -73,4 +73,22 @@ RSpec.describe 'fetch method' do
       )
     end
   end
+
+  describe 'when url is invalid' do
+    context 'when url is nil' do
+      let(:url) { nil }
+      
+      it 'returns failure and error message' do
+        is_expected.to have_attributes(success: false, error: 'Invalid URL')
+      end
+    end
+
+    context 'when url is invalid' do
+      let(:url) { 'foobar' }
+      
+      it 'returns failure and error message' do
+        is_expected.to have_attributes(success: false, error: 'Invalid URL')
+      end
+    end
+  end
 end
