@@ -9,6 +9,7 @@ def fetch(url)
 
   result.success = true
   result.links = html.css('a').map { |anchor_tag| anchor_tag['href'] }
+  result.assets = html.css('img').map { |image_tag| image_tag['src'] }
 
   result
 end
