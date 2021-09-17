@@ -15,6 +15,7 @@ def fetch(url)
     assets: extract_links_from_tag(html_doc, 'img', 'src')
   )
 rescue StandardError => error
+  # We should log the error (on Sentry, for example) so that we can fix it later.
   OpenStruct.new(success: false, error: "Couldn't fetch the url. Error: #{error.inspect}")
 end
 
